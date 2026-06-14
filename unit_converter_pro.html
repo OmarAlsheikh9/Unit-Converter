@@ -1,0 +1,412 @@
+<h2 class="sr-only">
+  Unit Converter — convert between length, weight, and temperature units
+</h2>
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: var(--font-sans);
+  }
+  .wrap {
+    padding: 2rem 0;
+    max-width: 680px;
+  }
+  .hero {
+    margin-bottom: 2rem;
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 0.4rem;
+  }
+  .hero-title {
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+  }
+  .tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 1.75rem;
+  }
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 0.5px solid var(--color-border-tertiary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 400;
+    transition: all 0.15s;
+  }
+  .tab i {
+    font-size: 15px;
+  }
+  .tab.active {
+    background: #1a1a2e;
+    color: #fff;
+    border-color: #1a1a2e;
+  }
+  .tab:not(.active):hover {
+    border-color: var(--color-border-secondary);
+    color: var(--color-text-primary);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+  .field-label {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    margin-bottom: 5px;
+    display: block;
+  }
+  .field {
+    margin-bottom: 1.1rem;
+  }
+  input[type="number"] {
+    width: 100%;
+    font-size: 15px;
+  }
+  select {
+    width: 100%;
+    font-size: 14px;
+  }
+  .swap-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-secondary);
+    cursor: pointer;
+    margin: 0.5rem auto;
+    color: var(--color-text-secondary);
+  }
+  .swap-btn:hover {
+    border-color: var(--color-border-primary);
+    color: var(--color-text-primary);
+  }
+  .convert-btn {
+    width: 100%;
+    padding: 10px;
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 0.5rem;
+  }
+  .convert-btn:hover {
+    opacity: 0.9;
+  }
+  .result-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .result-top {
+  }
+  .result-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    margin-bottom: 0.75rem;
+  }
+  .result-value {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.2;
+    word-break: break-all;
+    min-height: 72px;
+  }
+  .result-from {
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+    margin-top: 0.5rem;
+  }
+  .divider {
+    width: 100%;
+    height: 0.5px;
+    background: var(--color-border-tertiary);
+    margin: 1rem 0;
+  }
+  .formula-label {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+  }
+  .formula-value {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    font-family: var(--font-mono);
+  }
+  .reset-btn {
+    padding: 7px 14px;
+    border-radius: var(--border-radius-md);
+    border: 0.5px solid var(--color-border-secondary);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 1rem;
+  }
+  .reset-btn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-primary);
+  }
+  .empty {
+    color: var(--color-text-tertiary);
+    font-size: 15px;
+    padding-top: 0.5rem;
+  }
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <p class="hero-label">Measurement</p>
+    <h1 class="hero-title">Unit Converter</h1>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('length')" id="tab-length">
+      <i class="ti ti-ruler-2" aria-hidden="true"></i> Length
+    </button>
+    <button class="tab" onclick="switchTab('weight')" id="tab-weight">
+      <i class="ti ti-weight" aria-hidden="true"></i> Weight
+    </button>
+    <button class="tab" onclick="switchTab('temperature')" id="tab-temperature">
+      <i class="ti ti-temperature" aria-hidden="true"></i> Temperature
+    </button>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="field">
+        <label class="field-label">Value</label>
+        <input
+          type="number"
+          id="inputValue"
+          placeholder="Enter a number..."
+          oninput="convert()"
+        />
+      </div>
+      <div class="field">
+        <label class="field-label">From</label>
+        <select id="fromUnit" onchange="convert()"></select>
+      </div>
+      <button class="swap-btn" onclick="swapUnits()" title="Swap units">
+        <i class="ti ti-arrows-up-down" aria-hidden="true"></i>
+      </button>
+      <div class="field">
+        <label class="field-label">To</label>
+        <select id="toUnit" onchange="convert()"></select>
+      </div>
+      <button class="convert-btn" onclick="convert()">Convert</button>
+    </div>
+
+    <div class="card result-card">
+      <div class="result-top">
+        <p class="result-label">Result</p>
+        <div class="result-value" id="result">
+          <span class="empty">Enter a value to convert</span>
+        </div>
+        <div class="result-from" id="result-from"></div>
+      </div>
+      <div>
+        <div class="divider"></div>
+        <p class="formula-label">Formula</p>
+        <p class="formula-value" id="formula">—</p>
+        <button class="reset-btn" onclick="reset()">
+          <i
+            class="ti ti-refresh"
+            aria-hidden="true"
+            style="font-size: 13px; vertical-align: -1px; margin-right: 4px"
+          ></i
+          >Reset
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const units = {
+    length: {
+      labels: [
+        "Millimeter",
+        "Centimeter",
+        "Meter",
+        "Kilometer",
+        "Inch",
+        "Foot",
+        "Yard",
+        "Mile",
+      ],
+      keys: ["mm", "cm", "m", "km", "in", "ft", "yd", "mi"],
+      symbols: ["mm", "cm", "m", "km", "in", "ft", "yd", "mi"],
+      toBase: {
+        mm: 0.001,
+        cm: 0.01,
+        m: 1,
+        km: 1000,
+        in: 0.0254,
+        ft: 0.3048,
+        yd: 0.9144,
+        mi: 1609.344,
+      },
+    },
+    weight: {
+      labels: ["Milligram", "Gram", "Kilogram", "Ounce", "Pound"],
+      keys: ["mg", "g", "kg", "oz", "lb"],
+      symbols: ["mg", "g", "kg", "oz", "lb"],
+      toBase: { mg: 0.000001, g: 0.001, kg: 1, oz: 0.0283495, lb: 0.453592 },
+    },
+    temperature: {
+      labels: ["Celsius", "Fahrenheit", "Kelvin"],
+      keys: ["C", "F", "K"],
+      symbols: ["°C", "°F", "K"],
+      toBase: null,
+    },
+  };
+
+  let currentTab = "length";
+
+  function switchTab(tab) {
+    currentTab = tab;
+    Object.keys(units).forEach((t) => {
+      const btn = document.getElementById("tab-" + t);
+      btn.className = "tab" + (t === tab ? " active" : "");
+    });
+    populateSelects();
+    clearResult();
+  }
+
+  function populateSelects() {
+    const u = units[currentTab];
+    ["fromUnit", "toUnit"].forEach((id, i) => {
+      const sel = document.getElementById(id);
+      sel.innerHTML = u.keys
+        .map(
+          (k, j) =>
+            `<option value="${k}"${(i === 0 && j === 0) || (i === 1 && j === 1) ? " selected" : ""}>${u.labels[j]} (${u.symbols[j]})</option>`,
+        )
+        .join("");
+    });
+  }
+
+  function convertTemp(val, from, to) {
+    let c;
+    if (from === "C") c = val;
+    else if (from === "F") c = ((val - 32) * 5) / 9;
+    else c = val - 273.15;
+    if (to === "C") return c;
+    if (to === "F") return (c * 9) / 5 + 32;
+    return c + 273.15;
+  }
+
+  function getFormula(from, to) {
+    if (currentTab === "temperature") {
+      const f = {
+        "C-F": "x × 9/5 + 32",
+        "C-K": "x + 273.15",
+        "F-C": "(x − 32) × 5/9",
+        "F-K": "(x − 32) × 5/9 + 273.15",
+        "K-C": "x − 273.15",
+        "K-F": "(x − 273.15) × 9/5 + 32",
+      };
+      return from === to ? "x (same unit)" : f[from + "-" + to] || "—";
+    }
+    const base = units[currentTab].toBase;
+    if (from === to) return "x (same unit)";
+    const factor = base[from] / base[to];
+    return `x × ${parseFloat(factor.toPrecision(6))}`;
+  }
+
+  async function convert() {
+    const val = parseFloat(document.getElementById("inputValue").value);
+    const from = document.getElementById("fromUnit").value;
+    const to = document.getElementById("toUnit").value;
+    const fromSym =
+      units[currentTab].symbols[units[currentTab].keys.indexOf(from)];
+    const toSym = units[currentTab].symbols[units[currentTab].keys.indexOf(to)];
+
+    document.getElementById("formula").textContent = getFormula(from, to);
+
+    if (isNaN(val)) {
+      clearResult();
+      return;
+    }
+
+    let result = await fetch(`http://127.0.0.1:3000/${currentTab}/${from}/${to}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ value: val}),
+      })
+    const res = await result.json();
+    console.log(res);
+    if (result.ok) {
+      result = parseFloat(res.result); 
+    } else {
+      alert("Conversion error: " + res.errors);
+      return;
+    }
+    
+    const formatted = parseFloat(result.toPrecision(8)).toLocaleString(
+      "en-US",
+      { maximumFractionDigits: 6 },
+    );
+    document.getElementById("result").innerHTML =
+      `<span style="color:var(--color-text-primary)">${formatted} <span style="font-size:18px;color:var(--color-text-secondary)">${toSym}</span></span>`;
+    document.getElementById("result-from").textContent =
+      `${val} ${fromSym} = ${formatted} ${toSym}`;
+  }
+
+  function swapUnits() {
+    const f = document.getElementById("fromUnit");
+    const t = document.getElementById("toUnit");
+    const tmp = f.value;
+    f.value = t.value;
+    t.value = tmp;
+    convert();
+  }
+
+  function clearResult() {
+    document.getElementById("result").innerHTML =
+      '<span class="empty">Enter a value to convert</span>';
+    document.getElementById("result-from").textContent = "";
+    document.getElementById("formula").textContent = "—";
+  }
+
+  function reset() {
+    document.getElementById("inputValue").value = "";
+    clearResult();
+  }
+
+  populateSelects();
+</script>
